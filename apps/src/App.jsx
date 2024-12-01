@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { Input, Space, message } from "antd";
+import { Input, Space, message, Tabs } from "antd";
+import SearchBar from "./components/SearchBar";
 const { Search } = Input;
 
 const App = () => {
 	const [shortURL, setShortURL] = useState(null);
 	const [originUrl, setOriginUrl] = useState(null);
+	const onChange = (key) => {
+		console.log(key);
+	};
+	
 	const createShortURL = async (value, _e, info) => {
 		const response = await fetch(
 			`http://localhost:3000/create?url=${value}`,
@@ -21,32 +26,35 @@ const App = () => {
 		url = url.startsWith("http") ? url : `https://${url}`;
 		setOriginUrl(url);
 	};
-	return (
-		<>
-			<div>
-				<Search
-					placeholder="input origin url"
-					onSearch={createShortURL}
-					enterButton
-				/>
-				<div>Short link: {shortURL}</div>
-			</div>
-			<div>
-				<Search
-					placeholder="input short url"
-					onSearch={getOriginURL}
-					enterButton
-				/>
+	const items = [
+		{
+			key: "1",
+			label: "Shorten URL",
+			children: (
 				<div>
-					Origin link:
-					<a
-						href={originUrl}
-					>
-						{originUrl}
-					</a>
+					<SearchBar url={createShortURL} />
+					<div className="title">Short link: {shortURL}</div>
 				</div>
-			</div>
-		</>
+			),
+		},
+		{
+			key: "2",
+			label: "Get Origin URL",
+			children: (
+				<div>
+					<SearchBar url={getOriginURL} />
+					<div className="title">
+						Origin link:
+						<a href={originUrl}>{originUrl}</a>
+					</div>
+				</div>
+			),
+		},
+	];
+	return (
+		<div className="container">
+			<Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+		</div>
 	);
 };
 
